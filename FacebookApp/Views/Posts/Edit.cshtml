@@ -1,0 +1,77 @@
+﻿@model FacebookApp.Models.Post
+
+<div>
+    <div class="modal fade" id="editPostModal" tabindex="-1" role="dialog" aria-labelledby="editPostModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                @*<form asp-controller="Posts" asp-action="Edit" method="post">*@
+                    <div class="modal-header">
+                        Edit Post
+                    </div>
+                    <div class="modal-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @*<input type="hidden" asp-for="Id" />*@
+                        <div class="form-group">
+                            @*<input asp-for="Content" class="form-control" id="new_content" />*@
+                            <textarea name="new_content" class="form-control" asp-for="Content" id="new_content"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+                        @if (Model.Image != null)
+                        {
+                            <img src="@Url.Content(Model.Image)" id="old_image" width="200px"/>
+                        }
+                        <input type="file" name="ImageFile" id="new_image_file" class="form-control-file" />
+                        
+                        @*<input type="hidden" asp-for="PostingDate" />
+                        <input type="hidden" asp-for="IsDeleted" />
+                        <input type="hidden" asp-for="UserId" />*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <input type="button" value="Save" class="btn btn-primary" onclick="editPost(@Model.Id, '@Model.UserId');" />
+                    </div>
+                @*</form>*@
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+
+    function editPost(Id, UserId) {
+        var data = new FormData;
+        data.append("Id", Id);
+        data.append("UserId", UserId);
+        var content = $('#new_content').val();
+        var file = $('#new_image_file').get(0).files;
+        var oldimage = $('#old_image').attr('src');
+        if (file) {
+            data.append("ImageFile", file[0]);
+        }
+        if (content) {
+            data.append("Content", content);
+        }
+        if (oldimage) {
+            data.append("OldImage", oldimage);
+        }
+        $.ajax({
+                type: 'POST',
+                url: '/Posts/Edit',
+                data: data,
+                //dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    refreshPost();
+                    $('#editPostModal').modal('toggle');
+                },
+
+                error: function (response) {
+                    alert("Error");
+                }
+            });
+        }
+    
+
+</script>

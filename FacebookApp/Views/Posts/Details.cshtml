@@ -1,0 +1,442 @@
+﻿@model FacebookApp.ViewModel.UserViewModel
+@*@model IEnumerable<FacebookApp.Models.Post>*@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var profileOwnerId = Model.UserId;
+}
+
+<!-- #region create post -->
+@if (currentUser.Id == profileOwnerId)
+{
+    <div class="card gedf-card">
+        @*<div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab" aria-controls="posts" aria-selected="true">
+                        Create
+                        post
+                    </a>
+                </li>
+            </ul>
+        </div>*@
+        <div class="card-body">
+            @*<form asp-controller="Posts" asp-action="Create" method="post" enctype="multipart/form-data">*@
+            <div id="myTabContent">
+                <div id="posts" aria-labelledby="posts-tab">
+                    <div class="form-group">
+                        <label class="sr-only" for="message">post</label>
+                        <textarea name="Content" class="form-control" id="post_content" rows="3" placeholder="What are you thinking?"></textarea>
+                        <input type="hidden" asp-for="UserId" />
+                        <div class="form-group">
+                            <input asp-for="ImageFile" type="file" name="ImageFile" id="image_file" class="form-control-file" />
+                        </div>
+                    </div>
+                </div>
+                @*<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile">
+                            <label class="custom-file-label" for="customFile">Upload image</label>
+                        </div>
+                    </div>
+                    <div class="py-4"></div>
+                </div>*@
+            </div>
+            <div class="btn-toolbar justify-content-between">
+                <div class="btn-group">
+                    <input id="post_btn" type="button" class="btn btn-primary" value="Share" onclick="createPost()" />
+                </div>
+                <div class="btn-group">
+                    <button id="btnGroupDrop1" type="button" class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                        <i class="fa fa-globe"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="btnGroupDrop1">
+                        <a class="dropdown-item" href="#"><i class="fa fa-globe"></i> Public</a>
+                        <a class="dropdown-item" href="#"><i class="fa fa-users"></i> Friends</a>
+                        <a class="dropdown-item" href="#"><i class="fa fa-user"></i> Just me</a>
+                    </div>
+                </div>
+            </div>
+            @*</form>*@
+        </div>
+    </div>
+}
+<!-- #endregion -->
+<!-- #region showing posts -->
+
+@if (Model != null)
+    @foreach (var post in Model.Posts.OrderByDescending(p => p.PostingDate))
+    {
+        <div class="postcard card gedf-card">
+
+            <!-- #region post header -->
+
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    @{
+                        var u = await UserManager.FindByIdAsync(post.UserId);
+                    }
+                    <a class="d-flex justify-content-between align-items-center" asp-controller="User" asp-action="Profile" asp-route-id="@u.Id" style="color:black">
+                        <div class="mr-2">
+                            <img class="rounded-circle" width="50" height="50" src="@Url.Content(u.Image)" alt="">
+                        </div>
+                        <div class="ml-2">
+                            <div class="h5 m-0">@u.Nickname</div>
+                            <div class="h7 text-muted">@u.Email</div>
+                        </div>
+                    </a>
+                    @if (UserManager.GetUserId(User) == post.UserId)
+                    {
+                        <div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right">
+                                    <a asp-controller="Posts" asp-action="Edit" asp-route-id="@post.PostId" class="dropdown-item" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showEditPost()">Edit</a>
+                                    <a asp-controller="Posts" asp-action="Delete" asp-route-id="@post.PostId" class="dropdown-item" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showDeletePost()">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- #endregion -->
+            <!-- #region post body -->
+
+            <div class="card-body postCardBody">
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>@post.PostingDate</div>
+                <p class="card-text">
+                    @if (post.Content != null)
+                    {
+                        <div>@post.Content</div>
+                    }
+                    @if (post.Image != null)
+                    {
+                        <div class="text-center"><img src="@Url.Content(@post.Image)" style="max-width:100%;" /></div>
+                    }
+                </p>
+                @{
+                    var nlikes = post.likesVMList.Count();
+                    var ncomments = post.commentsVMList.Count();
+                }
+                @if (nlikes > 0)
+                {
+                    <a asp-controller="Likes" asp-action="Details" asp-route-id="@post.PostId" class="text-muted h7 mb-2" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showLikes()">
+                        @nlikes Likes
+                    </a>
+                }
+                @if (ncomments > 0)
+                {
+                    var collapseTargetID = "#" + post.PostId;
+                    <a class="text-muted h7 mb-2" href=@collapseTargetID data-toggle="collapse" onclick=showComments(@post.PostId)>@ncomments Comments</a>
+                }
+            </div>
+
+            <!-- #endregion -->
+            <!-- #region post footer -->
+
+            <div class="card-footer">
+
+                <!-- #region like -->
+                @*<form class="inlineForm" asp-controller="Likes" asp-action="Create" method="post">*@
+                    @*<input type="hidden" name="PostId" value="@post.PostId" />*@<input type="hidden" name="PostId" value="@post.PostId" />
+                    @{
+                        var isliked = post.likesVMList.Where(l => l.UserId == currentUser.Id).Count();
+                    }
+                    @if (isliked > 0)
+                    {
+
+                        @*<button class="btn" style="color:red;background-color: rgba(0, 0, 0, 0);" onclick="putLike(@post.PostId, '@post.UserId')"><i class="fa fa-gittip"></i> Liked</button>*@
+                        <button class="btn" style="color:red;background-color: rgba(0, 0, 0, 0);" onclick="putLike(@post.PostId)"><i class="fa fa-gittip"></i> Liked</button>
+                    }
+                    else
+                    {
+
+                        @*<button class="btn" style="color:#0366d6;background-color: rgba(0, 0, 0, 0);" onclick="putLike(@post.PostId, '@post.UserId')"><i class="fa fa-gittip"></i> Like</button>*@
+                        <button class="btn" style="color:#0366d6;background-color: rgba(0, 0, 0, 0);" onclick="putLike(@post.PostId)"><i class="fa fa-gittip"></i> Like</button>
+                    }
+                @*</form>*@
+                <!-- #endregion -->
+                <!-- #region comments -->
+                @{
+                    var collapseTargetID2 = "#" + post.PostId;
+                }
+                <a class="card-link" href=@collapseTargetID2 data-toggle="collapse" onclick=showCommentsAndFocus(@post.PostId)><i class="fa fa-comment"></i> Comment</a>
+                <div id=@post.PostId class="collapse show">
+                    <hr />
+                    <!-- #region showing comments -->
+
+                    <div>
+                        @{
+                            var commentsList = post.commentsVMList.ToList();
+
+                            if (commentsList != null)
+                            {
+                                foreach (var comment in commentsList)
+                                {
+                                    <div class="commentcard card gedf-card">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                @{
+                                                    var c = await UserManager.FindByIdAsync(comment.UserId);
+                                                }
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <a class="mr-2 commentLeftSide" asp-controller="User" asp-action="Profile" asp-route-id="@c.Id" style="color:black">
+                                                        <img class="rounded-circle" width="30" height="30" src="@Url.Content(c.Image)" alt="Image">
+                                                        <div class="h6 m-0 text-center">@c.Nickname</div>
+                                                    </a>
+                                                    <div class="ml-2 card-text">
+                                                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>@comment.CommentDate</div>
+                                                        <div class="h6">@comment.Content</div>
+                                                    </div>
+                                                </div>
+                                                @if (UserManager.GetUserId(User) == comment.UserId)
+                                                {
+                                                    <div>
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown">
+                                                                <i class="fa fa-ellipsis-h"></i>
+                                                            </button>
+                                                            <div class="dropdown-menu dropdown-menu-right">
+                                                                <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.CommentId" class="dropdown-item" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showEditComment()">Edit</a>
+                                                                <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.CommentId" class="dropdown-item" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showDeleteComment()">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+                            }
+                        }
+
+                    </div>
+
+
+                    <!-- #endregion -->
+                    <!-- #region write a comment -->
+
+                    <div class="writeComment">
+                        <form id="commentform" asp-controller="Comments" asp-action="Create" method="post" enctype="multipart/form-data">
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                                    <div class="form-group">
+                                        <label class="sr-only" for="message">post</label>
+
+                                        <textarea name="Content" class="form-control" id="comment_content" rows="3" placeholder="Write A Comment..."></textarea>
+                                    </div>
+
+                                </div>
+                                @*<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                        <div class="form-group">
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                                <label class="custom-file-label" for="customFile">Upload image</label>
+                                            </div>
+                                        </div>
+                                        <div class="py-4"></div>
+                                    </div>*@<div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div><div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="images-tab">
+                                    <div class="form-group">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="customFile" name="pic">
+                                            <label class="custom-file-label" for="customFile"></label>
+                                        </div>
+                                    </div>
+                                    <div class="py-4"></div>
+                                </div>
+                            </div>
+                            <div class="btn-toolbar justify-content-between">
+                                <div class="btn-group">
+                                    <input type="hidden" name="PostId" value="@post.PostId" />
+                                    <input type="button" class="btn btn-primary" value="Comment" onclick="putComment(@post.PostId);" />
+
+                                </div>
+
+                            </div>
+                        </form>
+
+                    </div>
+
+
+                    <!-- #endregion -->
+                </div>
+                <!-- #endregion -->
+
+            </div>
+
+            <!-- #endregion -->
+
+        </div>
+    }
+
+<!-- #endregion -->
+<script>
+    function createPost() {
+
+        var content = $('#post_content').val();
+        var file = $('#image_file').get(0).files;
+        var data = new FormData;
+        if (file) {
+            data.append("ImageFile", file[0]);
+        }
+        if (content) {
+            data.append("Content", content);
+        }
+        if (content || file[0]) {
+            $.ajax({
+                    type: 'POST',
+                    url: '/Posts/Create',
+                    data: data,
+                    //contentType: "application/json; charset=utf-8",
+                    //dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        refreshPost();
+                    },
+
+                    error: function (response) {
+                        alert("Error");
+                    }
+                });
+        }
+    }
+
+    function putComment(PostId) {
+        var s = "#" + PostId;
+        var ss = s + " #comment_content"
+        var content = $(ss).val();
+        if (content) {
+            $.ajax({
+                type: 'POST',
+                url: '/Comments/Create',
+                data: {
+                    Content: content,
+                    postID: PostId
+                },
+                //contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (response) {
+                    refreshPost();
+                },
+
+                error: function (response) {
+                    alert("Error");
+                }
+            });
+        }
+    }
+
+    function putLike(PostId/*, UserId*/) {
+        console.log("This is like");
+        $.ajax({
+            type: 'POST',
+            url: '/Likes/Create',
+            data: {
+                //UserId: UserId,
+                PostId: PostId
+            },
+            //contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            success: function (response) {
+                //alert("Success");
+                refreshPost();
+            },
+
+            error: function (response) {
+                alert("Error");
+            }
+        });
+    }
+
+</script>

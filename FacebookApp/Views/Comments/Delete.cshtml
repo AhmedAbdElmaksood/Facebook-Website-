@@ -1,0 +1,49 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model FacebookApp.Models.UserCommentsOnPost
+
+<div>
+    <div class="modal fade" id="deleteCommentModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                @*<form asp-controller="Comments" asp-action="Delete" method="post">*@
+                <div class="modal-body">
+                    Are you sure you want to delete this Comment?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <input type="button" value="Yes" class="btn btn-primary" onclick="deleteComment(@Model.CommentId);" />
+                </div>
+                @*</form>*@
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+        function deleteComment(CommentId) {
+
+        $.ajax({
+                type: 'POST',
+                url: '/Comments/Delete',
+            data: {
+                CommentId:CommentId,
+                },
+                dataType: 'json',
+                success: function (response) {
+                    refreshPost();
+                    $('#deleteCommentModal').modal('toggle');
+                },
+
+                error: function (response) {
+                    alert("Error");
+                }
+            });
+        }
+
+</script>
+

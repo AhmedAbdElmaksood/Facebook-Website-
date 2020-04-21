@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@*<ul class="navbar-nav">*@
+@*<li class="nav-item">
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Search">
+            <div class="input-group-append">
+                <a class="input-group-text" asp-area="" asp-controller="Home" asp-action="Search">
+                    <i class="fas fa-search"></i>
+                </a>
+            </div>
+        </div>
+    </li>*@
+<li class="nav-item">
+    @{
+        var u = await UserManager.GetUserAsync(User);
+        <a class="nav-link text-light" asp-area="" asp-controller="User" asp-action="Profile" asp-route-id="@u.Id" title="Profile"><img src="@Url.Content(@u.Image)" style="width: 20px" /> @u.Nickname</a>
+    }
+</li>
+<li class="divider-vertical"></li>
+<li class="nav-item">
+    @*<a class="nav-link text-light" asp-area="" asp-controller="Timeline" asp-action="Index" title="Home"><i class="fa fa-home"></i> Home</a>*@
+    <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index" title="Home"><i class="fa fa-home"></i> Home</a>
+<li class="divider-vertical"></li>
+<li class="nav-item">
+    <a class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Settings"><i class="fa fa-cog"></i> Settings</a>
+</li>
+<li class="divider-vertical"></li>
+<li class="nav-item">
+    @*<form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" title="Logout">
+            <button type="submit" class="nav-link btn btn-link text-light"><i class="fa fa-sign-out-alt"></i></button>
+        </form>*@
+    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" title="Logout">
+        <button type="submit" class="nav-link btn btn-link text-light"><i class="fa fa-sign-out-alt"></i></button>
+    </form>
+</li>
+@*</ul>*@
+
+

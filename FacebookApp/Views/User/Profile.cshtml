@@ -1,0 +1,443 @@
+﻿
+@model FacebookApp.ViewModel.UserViewModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@using Microsoft.AspNetCore.Http;
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.js"></script>
+<script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<style>
+
+    .people-nearby .google-maps {
+        background: #f8f8f8;
+        border-radius: 4px;
+        border: 1px solid #f1f2f2;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+        .people-nearby .google-maps .map {
+            height: 300px;
+            width: 100%;
+            border: none;
+        }
+
+    .people-nearby .nearby-user {
+        padding: 20px 0;
+        border-top: 1px solid #f1f2f2;
+        border-bottom: 1px solid #f1f2f2;
+        margin-bottom: 20px;
+    }
+
+    img.profile-photo-lg {
+        height: 80px;
+        width: 80px;
+        border-radius: 50%;
+    }
+
+    .kl-shadow-br {
+        -webkit-box-shadow: 4px 4px 5px -1px rgba(50, 50, 50, 0.75);
+        -moz-box-shadow: 4px 4px 5px -1px rgba(50, 50, 50, 0.75);
+        box-shadow: 4px 4px 5px -1px rgba(50, 50, 50, 0.75);
+    }
+
+    .emp-profile {
+        padding: 3%;
+        margin-top: 3%;
+        margin-bottom: 3%;
+        border-radius: 0.5rem;
+        background: #fff;
+    }
+
+    .profile-img {
+        text-align: center;
+    }
+
+        .profile-img img {
+            width: 70%;
+            height: 100%;
+        }
+
+        .profile-img .file {
+            position: relative;
+            overflow: hidden;
+            margin-top: -20%;
+            width: 70%;
+            border: none;
+            border-radius: 0;
+            font-size: 15px;
+            background: #212529b8;
+        }
+
+            .profile-img .file input {
+                position: absolute;
+                opacity: 0;
+                right: 0;
+                top: 0;
+                cursor: pointer;
+            }
+
+    .profile-head h5 {
+        color: #333;
+    }
+
+    .profile-head h6 {
+        color: #0062cc;
+    }
+
+    .profile-edit-btn {
+        border: none;
+        border-radius: 1.5rem;
+        width: 70%;
+        padding: 2%;
+        font-weight: 600;
+        color: #6c757d;
+        cursor: pointer;
+    }
+
+    .proile-rating {
+        font-size: 12px;
+        color: #818182;
+        margin-top: 5%;
+    }
+
+        .proile-rating span {
+            color: #495057;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+    .profile-head .nav-tabs {
+        margin-bottom: 5%;
+    }
+
+        .profile-head .nav-tabs .nav-link {
+            font-weight: 600;
+            border: none;
+        }
+
+            .profile-head .nav-tabs .nav-link.active {
+                border: none;
+                border-bottom: 2px solid #0062cc;
+            }
+
+    .profile-work {
+        padding: 14%;
+        margin-top: -15%;
+    }
+
+        .profile-work p {
+            font-size: 12px;
+            color: #818182;
+            font-weight: 600;
+            margin-top: 10%;
+        }
+
+        .profile-work a {
+            text-decoration: none;
+            color: #495057;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-work ul {
+            list-style: none;
+        }
+
+    .profile-tab label {
+        font-weight: 600;
+    }
+
+    .profile-tab p {
+        font-weight: 600;
+        color: #0062cc;
+    }
+
+    .h7 {
+        font-size: 0.8rem;
+    }
+
+    .gedf-wrapper {
+        margin-top: 0.97rem;
+    }
+
+    .dropdown-toggle::after {
+        content: none;
+        display: none;
+    }
+
+    .postCardBody {
+        padding-bottom: 10px;
+    }
+
+    .inlineForm {
+        display: inline;
+    }
+
+    .commentcard {
+        margin-top: 0px;
+    }
+
+    .writeComment {
+        margin-top: 20px;
+    }
+
+    .postcard {
+        margin-top: 20px;
+    }
+
+    .commentLeftSide {
+        border-right: 1px solid rgba(0,0,0,.1);
+        padding-right: 10px;
+    }
+
+    .card-text {
+        color: black !important;
+        font-weight: normal !important;
+    }
+</style>
+
+@{
+    var profileOwnerId = Model.UserId;
+    var currentUserId = UserManager.GetUserId(User);
+    var currentUser = await UserManager.GetUserAsync(User);
+}
+
+<div id="modalDiv">
+</div>
+
+<div class="container emp-profile card">
+    <div class="row">
+
+        <!-- #region left side: personal info -->
+
+        <div class="col-md-4">
+            <div class="profile-img">
+                <img src="@Url.Content(Model.Image)" alt="" />
+                <br />
+                @if (profileOwnerId == currentUserId)
+                {
+                    @*<div class="file btn btn-lg btn-primary">
+                            Change Photo
+                            <input type="file" name="UserPhoto" />
+                        </div>*@
+                    <a asp-controller="User" asp-action="EditPicture" asp-route-id="@Model.UserId" class="profile-edit-btn" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showEditPicture()">Change Picture</a>
+                }
+            </div>
+            <br />
+            <div class="profile-work">
+                @*<h5>Personal Information</h5> <br />*@
+                <h6>Gender : @Model.Gender</h6>
+                <h6>Birthdate : @Model.BirthDate.Date.ToShortDateString()</h6>
+                <h6>Bio : @Model.Bio</h6><br />
+            </div>
+        </div>
+
+        <!-- #endregion -->
+        <!-- #region right side: profile -->
+
+        <div class="col-md-8">
+
+            <!-- #region profile top -->
+
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="profile-head">
+                        <br />
+                        <b class="h5">
+                            Name : @Model.Nickname
+                        </b>
+                        <br />
+                        <h6>
+                            Email : @Model.Email
+                        </h6>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    @if (profileOwnerId == currentUserId)
+                    {
+                        <a asp-controller="User" asp-action="Edit" asp-route-id="@Model.UserId" class="profile-edit-btn" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showEditProfile()">Edit Profile</a>
+                    }
+
+                    @if (Model.UserId != UserManager.GetUserId(User) && Model.Friends.Count > 0)
+                    {
+                        var x = Model.Friends.FirstOrDefault(f => (f.SenderId == currentUserId && f.RecieverId == profileOwnerId) || (f.RecieverId == currentUserId && f.SenderId == profileOwnerId));
+
+                        if (Model.Friends.FirstOrDefault(f => f.RecieverId == currentUserId && f.SenderId == profileOwnerId) != null && Model.SenderId != currentUserId &&
+                            (Model.Friends.FirstOrDefault(f => f.RecieverId == currentUserId && f.SenderId == profileOwnerId).Status == FriendRequestStatus.Pending))
+                        {
+                            <a class="btn btn-success pull-right" asp-controller="User" asp-action="AcceptFriendRequest" asp-route-id="@Model.UserId">Confirm</a>
+                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="CancelFriendRequest" asp-route-id="@Model.UserId">Cancel</a>
+                        }
+                        else if (Model.Friends.FirstOrDefault(f => f.SenderId == currentUserId && f.RecieverId == profileOwnerId) != null &&
+                            Model.Friends.FirstOrDefault(f => f.SenderId == currentUserId && f.RecieverId == profileOwnerId).Status == FriendRequestStatus.Pending)
+                        {
+                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="CancelFriendRequest" asp-route-id="@Model.UserId">Cancel</a>
+                        }
+
+                        else if (Model.Friends.FirstOrDefault(f => (f.SenderId == currentUserId && f.RecieverId == profileOwnerId) || (f.RecieverId == currentUserId && f.SenderId == profileOwnerId)) != null &&
+                            (Model.Friends.FirstOrDefault(f => (f.SenderId == currentUserId && f.RecieverId == profileOwnerId) || (f.RecieverId == currentUserId && f.SenderId == profileOwnerId)).Status == FriendRequestStatus.Friend))
+                        {
+                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="UnFriend" asp-route-id="@Model.UserId">Unfriend</a>
+                        }
+                        else if (Model.Friends.FirstOrDefault(f => (f.SenderId == currentUserId && f.RecieverId == profileOwnerId) || (f.RecieverId == currentUserId && f.SenderId == profileOwnerId)) == null ||
+                            Model.Friends.FirstOrDefault(f => (f.SenderId == currentUserId && f.RecieverId == profileOwnerId) || (f.RecieverId == currentUserId && f.SenderId == profileOwnerId)).Status == FriendRequestStatus.NotFriend)
+                        {
+                            <a class="btn btn-primary pull-right" asp-controller="User" asp-action="SendFriendRequest" asp-route-id="@Model.UserId">Add Friend</a>
+                        }
+                    }
+                    else if (Model.UserId != UserManager.GetUserId(User))
+                    {
+                        <a class="btn btn-primary pull-right" asp-controller="User" asp-action="SendFriendRequest" asp-route-id="@Model.UserId">Add Friend</a>
+                    }
+                </div>
+            </div>
+
+
+            <!-- #endregion -->
+            <!-- #region tabs navbar -->
+
+            <div class="row profile-head mt-3">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active TabToggle" id="timeline-tab" data-toggle="tab" href="#timeline" role="tab" onclick="TimelineTabToggleFunc()">Timeline</a>
+                        </li>
+                        @if (currentUserId == profileOwnerId)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link TabToggle" id="friends-tab" data-toggle="tab" href="#friends" role="tab" onclick="FriendsTabToggleFunc()">Friends</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- #endregion -->
+            <!-- #region tabs content -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-content profile-tab" id="myTabContent">
+                        <!-- #region timeline -->
+                        <div class="tab-pane fade show active" id="timeline" role="tabpanel">
+                            <div class="col-md-12 gedf-main">
+                                @*<partial name="../Posts/Details" />*@
+                                <div class="get_posts" id="@profileOwnerId"></div>
+                            </div>
+                        </div>
+                        <!-- #endregion -->
+                        <!-- #region friends -->
+                        @if (currentUserId == profileOwnerId)
+                        {
+                            <div class="tab-pane fade" id="friends" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-11">
+                                        <div class="col-md-12 gedf-main">
+                                            <div class="people-nearby">
+                                                @if (Model.Friends.Count() > 0)
+                                                    @foreach (var friend in Model.Friends)
+                                                    {
+                                                        <div class="nearby-user">
+                                                            <div class="row">
+                                                                <div class="col-md-2 col-sm-2">
+                                                                    <img src="@Url.Content(friend.Image)" alt="user" class="profile-photo-lg">
+                                                                </div>
+                                                                <div class="col-md-7 col-sm-7">
+                                                                    <a asp-controller="User" asp-action="Profile" asp-route-id="@friend.FriendId">
+                                                                        <h5><a asp-controller="User" asp-action="Profile" asp-route-id="@friend.FriendId" class="profile-link">@friend.Nickname</a></h5>
+                                                                        <p>@friend.Email</p>
+                                                                    </a>
+                                                                    <p class="text-muted h6">@friend.Bio</p>
+                                                                    <p class="text-muted h6">@friend.Gender</p>
+                                                                </div>
+                                                                <div class="col-md-3 col-sm-3">
+                                                                    @if (profileOwnerId == currentUserId)
+                                                                    {
+                                                                        @if (friend.Status == FriendRequestStatus.Pending && friend.RecieverId == currentUserId)
+                                                                        {
+                                                                            <a class="btn btn-success pull-right" asp-controller="User" asp-action="AcceptFriendRequest" asp-route-id="@friend.FriendId">Confirm</a>
+                                                                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="CancelFriendRequest" asp-route-id="@friend.FriendId">Cancel</a>
+                                                                        }
+                                                                        else if (friend.Status == FriendRequestStatus.Pending && friend.SenderId == currentUserId)
+                                                                        {
+                                                                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="CancelFriendRequest" asp-route-id="@friend.FriendId">Cancel</a>
+                                                                        }
+                                                                        else if (friend.Status == FriendRequestStatus.Friend)
+                                                                        {
+                                                                            <a class="btn btn-danger pull-right" asp-controller="User" asp-action="UnFriend" asp-route-id="@friend.FriendId">Unfriend</a>
+                                                                        }
+                                                                        else /*if (friend.Status == FriendRequestStatus.NotFriend)*/
+                                                                        {
+                                                                            <a class="btn btn-primary pull-right" asp-controller="User" asp-action="SendFriendRequest" asp-route-id="@friend.FriendId">Add Friend</a>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <!-- #endregion -->
+                    </div>
+                </div>
+            </div>
+            <!-- #endregion -->
+        </div>
+        <!-- #endregion -->
+    </div>
+</div>
+
+
+
+<script>
+    $(function () {
+        refreshPost();
+    })
+
+    function TimelineTabToggleFunc() {
+            var timelineTab = $("#timeline");
+            var friendsTab = $("#friends");
+            timelineTab.show();
+            friendsTab.hide();
+    }
+    function FriendsTabToggleFunc() {
+        var timelineTab = $("#timeline");
+        var friendsTab = $("#friends");
+        friendsTab.show();
+        timelineTab.hide();
+    }
+
+    function refreshPost() {
+        var userid = document.querySelector(".get_posts").id;
+        var url = "/Posts/ProfileDetails/" + userid;
+        $(".get_posts").load(url);
+    }
+    function showEditPost() { $("#editPostModal").modal('toggle'); }
+    function showDeletePost() { $("#deletePostModal").modal('toggle'); }
+    function showLikes() { $("#likesModal").modal('toggle'); }
+    function showEditComment() { $("#editCommentModal").modal('toggle'); }
+    function showDeleteComment() { $("#deleteCommentModal").modal('toggle'); }
+    function showComments(id) {
+        var s = "#" + id;
+        $(s).collapse('toggle');
+    }
+    function showCommentsAndFocus(id) {
+        var s = "#" + id;
+        $(s).collapse('show');
+        var ss = s + " #comment"
+        $(ss).focus();
+    }
+    function showEditProfile() { $("#editProfileModal").modal('toggle'); }
+    function showEditPicture() { $("#editPictureModal").modal('toggle'); }
+</script>

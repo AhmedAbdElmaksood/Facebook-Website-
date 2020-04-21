@@ -1,0 +1,144 @@
+﻿@model FacebookApp.ViewModel.UserViewModel
+@*@model IEnumerable<FacebookApp.Models.Post>*@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<link rel="shortcut icon" href="//d2d3qesrx8xj6s.cloudfront.net/favicon.ico" type="image/x-icon">
+<link rel="icon" href="//d2d3qesrx8xj6s.cloudfront.net/favicon.ico" type="image/x-icon">
+<link rel="apple-touch-icon-precomposed" href="//d2d3qesrx8xj6s.cloudfront.net/apple-touch-icon-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="//d2d3qesrx8xj6s.cloudfront.net/apple-touch-icon-72x72-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="//d2d3qesrx8xj6s.cloudfront.net/apple-touch-icon-114x114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="//d2d3qesrx8xj6s.cloudfront.net/apple-touch-icon-144x144-precomposed.png">
+<link rel="alternate" type="application/rss+xml" title="Latest snippets from Bootsnipp.com" href="https://bootsnipp.com/feed.rss" />
+<script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.js"></script>
+<script src="~/lib/jquery-ajax-unobtrusive/dist/jquery.unobtrusive-ajax.min.js"></script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<style>
+    body {
+        background-color: #eeeeee;
+    }
+
+    .h7 {
+        font-size: 0.8rem;
+    }
+
+    .gedf-wrapper {
+        margin-top: 0.97rem;
+    }
+
+    .dropdown-toggle::after {
+        content: none;
+        display: none;
+    }
+
+    .postCardBody {
+        padding-bottom: 10px;
+    }
+
+    .inlineForm {
+        display: inline;
+    }
+
+    .commentcard {
+        margin-top: 0px;
+    }
+
+    .writeComment {
+        margin-top: 20px;
+    }
+
+    .postcard {
+        margin-top: 20px;
+    }
+
+    .commentLeftSide {
+        border-right: 1px solid rgba(0,0,0,.1);
+        padding-right: 10px;
+    }
+</style>
+
+
+<!-- #region modal empty div -->
+
+<div id="modalDiv">
+
+</div>
+<!-- #endregion -->
+
+<div class="container-fluid gedf-wrapper">
+    <div class="row">
+
+        <!-- #region left side: personal info -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    @{
+                        var currentUser = await UserManager.GetUserAsync(User);
+                    }
+                    <div class="h5">Personal Information</div>
+                    <div class="h7 text-muted">Fullname : @currentUser.Nickname</div>
+                    <div class="h7 text-muted">Email : @currentUser.Email</div>
+                    <div class="h7 text-center m-3">
+                        <img src="@Url.Content(currentUser.Image)" style="width:100px;height:100px;" />
+                    </div>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="h6 text-muted">@ViewBag.FriendsCount Friends</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- #endregion -->
+        <div class="col-md-9 gedf-main">
+            @*<partial name="../Posts/Details" />*@
+            <div id="get_posts"></div>
+
+        </div>
+        <!-- #region right side: additional info/friends -->
+
+        @*<div class="col-md-3">
+            <div class="card gedf-card">
+                <div class="card-body">
+                    <h5 class="card-title">Additional info</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"></h6>
+                    <p class="card-text">
+
+                    </p>
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>*@
+
+        <!-- #endregion -->
+
+    </div>
+</div>
+
+
+<script>
+
+    $(function () {
+        refreshPost();
+    })
+
+    function refreshPost() { $("#get_posts").load("/Posts/HomeDetails"); }
+    function showEditPost() { $("#editPostModal").modal('toggle'); }
+    function showDeletePost() { $("#deletePostModal").modal('toggle'); }
+    function showLikes() { $("#likesModal").modal('toggle'); }
+    function showEditComment() { $("#editCommentModal").modal('toggle'); }
+    function showDeleteComment() { $("#deleteCommentModal").modal('toggle'); }
+    function showComments(id) {
+        var s = "#" + id;
+        $(s).collapse('toggle');
+    }
+    function showCommentsAndFocus(id) {
+        var s = "#" + id;
+        $(s).collapse('show');
+        var ss = s + " #comment_content"
+        $(ss).focus();
+    }
+</script>

@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model IEnumerable<Role>
+
+<div class="row">
+    <div class="list-group col-md-2">
+        @Html.ActionLink("Create Role", "CreateRole", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Get Roles", "GetRoles", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+
+    </div>
+    <div class="col-md-10">
+
+        <div class="card card-plain">
+            <div class="card-header card-header-info">
+                <h4 class="card-title mt-0">Roles List</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="">
+                        <th>
+                            Role Name
+                        </th>
+                        <th>
+                            Description
+                        </th>
+                        <th>
+                            Edit Role
+                        </th>
+                        <th>
+                            Delete Role
+                        </th>
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td scope="row">@item.Name</td>
+                                <td scope="row">@item.Description</td>
+
+                                <td>
+                                    <a asp-action="UpdateRole" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                                </td>
+                                <td>
+                                    <a asp-action="DeleteRole" asp-controller="Admin" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

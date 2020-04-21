@@ -1,0 +1,342 @@
+﻿@page
+@model RegisterModel
+
+<html>
+
+<head>
+    <title>Facebook Registeration</title>
+    <meta name="Description" content="Facebook Homepage" />
+    <style>
+        /*body {
+            background-image: url("grid.png");
+            height: auto;
+            background-color: rgb(227, 229, 241);
+            color: black;
+        }*/
+        /*html{
+            font-size:0%;
+        }*/
+        #radiotext{
+            margin-bottom: 0;
+            font-size:16px;
+            color: #1d2129;
+        }
+
+        .fb-header-base {
+            width: 100%;
+            height: 90px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: white;
+            z-index: 7;
+            font-family: verdana;
+            -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, .25);
+        }
+
+        .fb-header, #loginBtn {
+            width: 100%;
+            height: 90px;
+            position: absolute;
+            background: #3b5998;
+            top: 0;
+            left: 0;
+            color: white;
+            z-index: 7;
+            font-family: verdana;
+        }
+
+        #img1 {
+            left: 178px;
+            height: 50px;
+            width: 5%;
+            top: 25px;
+        }
+
+        #form1 {
+            left: 750px;
+            height: auto;
+            width: 180px;
+            top: 20px;
+            font-family: verdana;
+            font-size: 12px;
+        }
+
+        #form2 {
+            left: 940px;
+            height: 60px;
+            width: 250px;
+            top: 20px;
+            font-family: verdana;
+            font-size: 12px;
+        }
+
+        .submit1 {
+            left: 1130px;
+            top: 35px;
+            z-index: 7;
+            height: auto;
+            /*width: 70px;*/
+            position: absolute;
+            /*background: #5b7bc0;*/
+            color: white;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 18px;
+            /*z-index: 20;*/
+            height: 30px;
+            /*position: fixed;*/
+            cursor: pointer;
+            /*padding: 0;
+            white-space: nowrap;
+            background: none;
+            border: 0;
+            background: none;
+            color: #fff;*/
+            margin: 0;
+            box-sizing: border-box;
+            background: #3d5b99;
+            border: 1px solid;
+        }
+
+        .fb-body {
+            position: absolute;
+            left: 0px;
+            top: 90px;
+            width: 100%;
+            height: 645px;
+            color: black;
+        }
+
+        #namebox {
+            width: 200px;
+            height: 35px;
+            border-radius: 5px 5px 5px 5px;
+            background: white;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 8px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: gray;
+        }
+
+        #intro1 {
+            left: 178px;
+            top: 20px;
+            font-family: verdana;
+            font-size: 20px;
+            color: #0e385f;
+            height: 75px;
+            width: 550px;
+            /*font-weight: bold;*/
+            /*line-height: 29px;
+            word-spacing: -1px;
+            font-family: Helvetica, Arial, sans-serif;*/
+        }
+
+        #intro2 {
+            left: 750px;
+            top: 20px;
+            font-family: verdana;
+            font-size: 30px;
+            color: #1d2129;
+            font-weight: bold;
+            height: 75px;
+            width: 500px;
+        }
+
+        #img2 {
+            top: 130px;
+            left: 178px;
+            width: 537px;
+            height: 195px;
+        }
+        
+        #img2 img{
+            width:550px;
+        }
+
+        #intro3 {
+            left: 750px;
+            top: 70px;
+            font-family: verdana;
+            font-size: 18px;
+            color: #1d2129;
+            height: 50px;
+            width: 300px;
+        }
+
+        #form3 {
+            top: 120px;
+            left: 750px;
+            font-family: verdana;
+            font-size: 18px;
+            color: #142170;
+            width: 450px;
+            height: auto;
+        }
+
+        #mailbox {
+            width: 408px;
+            height: 35px;
+            border-radius: 5px 5px 5px 5px;
+            background: white;
+            padding: 10px;
+            font-size: 14px;
+            margin-top: 8px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: gray;
+        }
+
+        #r-b {
+            font-size: 12px;
+            height: 15px;
+            width: 15px;
+        }
+
+        .button2 {
+            width: 250px;
+            height: 40px;
+            left: 750px;
+            top: 625px;
+            background: green;
+            font-family: verdana;
+            font-size: 18px;
+            color: white;
+            border-radius: 5px 5px 5px 5px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: gray;
+            cursor: pointer;
+            outline: none;
+            background: linear-gradient(#67ae55, #578843);
+            background-color: #69a74e;
+            box-shadow: inset 0 1px 1px #a4e388;
+            border-color: #3b6e22 #3b6e22 #2c5115;
+        }
+
+        #intro4 {
+            font-family: verdana;
+            font-size: 12px;
+            color: gray;
+        }
+
+        #intro5 {
+            font-family: verdana;
+            font-size: 14px;
+            color: gray;
+        }
+
+        .fb-body-footer {
+            width: 100%;
+            position: absolute;
+            left: 0px;
+            height: 80px;
+            background: white;
+            top: 700px;
+        }
+
+        #fb-body-footer-base {
+            width: 900px;
+            top: 15px;
+            left: 200px;
+            color: blue;
+            height: 60px;
+        }
+    </style>
+</head>
+<body>
+    <div class="fb-header-base"></div>
+        <div class="fb-header">
+            <div id="img1" class="fb-header"><img src="~/Images/facebook.png" height="50" /></div>
+            <form id="account" method="post">
+                    <div id="form1" class="fb-header form-group">
+                        <label asp-for="Input.Email"></label><br />
+                        <input asp-for="Input.Email">
+                        <span asp-validation-for="Input.Email" class="text-danger"></span><br />
+                    </div>
+
+                    <div id="form2" class="fb-header form-group">
+                        <label asp-for="Input.Password"></label><br />
+                        <input asp-for="Input.Password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span><br />
+                        <a id="forgot-password" asp-page="./ForgotPassword" style="color:#9cb4d8;">Forgot your password?</a>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="submit" asp-page="./Login" class="submit1" value="Log In" />
+                    </div>
+                </form>
+        </div>
+
+    <div class="fb-body">
+            <div id="intro1" class="fb-body">
+                Facebook helps you connect and share with the <br>
+                people in your life.
+            </div>
+            <div id="intro2" class="fb-body">Create an account</div>
+            <div id="img2" class="fb-body"><img src="~/Images/world1.png" /></div>
+            <div id="intro3" class="fb-body">It's quick and easy.</div>
+
+            <div id="form3" class="fb-body form-inline">
+                <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="form-group">
+                        <input asp-for="Input.UserName" class="form-control" placeholder="Username" type="text" id="mailbox" />
+                        <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Input.Email" class="form-control" placeholder="Email" type="text" id="mailbox" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Input.Password" class="form-control" placeholder="Password" type="password" id="mailbox" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" id="mailbox" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Phone Number" id="mailbox" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input asp-for="Input.Bio" class="form-control" placeholder="Bio" id="mailbox" />
+                        <span asp-validation-for="Input.Bio" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.BirthDate" style="color: #90949c;"></label> &nbsp; &nbsp;
+                        <input asp-for="Input.BirthDate" class="form-control" id="namebox" />
+                        <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <span asp-validation-for="Input.Gender" class="text-danger"></span>
+                        @*<label asp-for="Input.Gender" style="color: #90949c;"></label> &nbsp; &nbsp;*@
+                        <input asp-for="Input.Gender" type="radio" id="r-b" value="Male" /> <p id="radiotext">Male</p>
+                        &nbsp;
+                        <input asp-for="Input.Gender" type="radio" id="r-b" value="Female" /><p id="radiotext">Female</p>
+                    </div>
+
+                    <p id="intro4">
+                        By clicking Sign Up, you agree to our Terms, Data Policy and Cookie Policy. You may receive SMS notifications from us and can opt out at any time.
+                    </p>
+                    <input type="submit" class="button2" value="Sign Up" >
+                    <br /><hr />
+
+                    <p id="intro5">Create a Page for a celebrity, band or business.</p>
+                </form>
+            </div>
+        </div>
+
+</body>
+
+</html>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

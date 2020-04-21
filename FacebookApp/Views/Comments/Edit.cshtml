@@ -1,0 +1,68 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model FacebookApp.Models.UserCommentsOnPost
+
+<div>
+    <div class="modal fade" id="editCommentModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                @*<form asp-controller="Comments" asp-action="Edit" method="post">*@
+                    <div class="modal-body">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="CommentId" />
+                        <div class="form-group">
+                            @*<input asp-for="Content" class="form-control" />*@
+                            <textarea name="new_content" class="form-control" asp-for="Content" id="new_comment"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+                       
+                        @*<input type="hidden" asp-for="CommentDate" />
+                        <input type="hidden" asp-for="IsDeleted" />
+                        <input type="hidden" asp-for="UserId" />
+                        <input type="hidden" asp-for="PostId" />*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <input type="button" value="Save" class="btn btn-primary" onclick="editComment('@Model.CommentId','@Model.UserId','@Model.PostId','@Model.CommentDate','@Model.IsDeleted');" />
+                    </div>
+                @*</form>*@
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+        function editComment(CommentId, UserId, PostId, CommentDate, IsDeleted) {
+        
+        var Content = $('#new_comment').val();
+        console.log(Content);
+        $.ajax({
+                type: 'POST',
+                url: '/Comments/Edit',
+            data: {
+                CommentId: CommentId,
+                UserId: UserId,
+                PostId: PostId,
+                CommentDate:CommentDate,
+                Content: Content,
+                IsDeleted: IsDeleted,
+                },                                
+                dataType: 'json',
+                success: function (response) {
+                    refreshPost();
+                    $('#editCommentModal').modal('toggle');
+                },
+
+                error: function (response) {
+                    alert("Error");
+                }
+            });
+        }
+
+
+</script>

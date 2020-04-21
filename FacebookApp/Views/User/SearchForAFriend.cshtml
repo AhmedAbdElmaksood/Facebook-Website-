@@ -1,0 +1,140 @@
+﻿@model IEnumerable<FacebookApp.Models.User>
+
+<style>
+
+    * {
+        outline: none
+    }
+
+    body {
+        font-family: "Lato", sans-serif;
+        background: #f1f1f1;
+        margin: 0
+    }
+
+    /*.avatar {
+        vertical-align: middle;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+    }
+
+    #UsersData {
+        width: 50%;
+    }
+    .bar {
+        height: 42px;
+        background-color: #4C66A4;
+        border: 0;
+        -moz-box-shadow: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        position: relative
+    }
+
+    .content-list {
+        width: 100%;
+        background: #FFF;
+        border: 1px solid #E1E1E1;
+        border-color: rgba(0, 0, 0, 0.2);
+        border-left: 0;
+        border-right: 0;
+        border-top: 0;
+        -moz-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
+        -webkit-box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
+        box-shadow: 0 3px 5px 0 rgba(0, 0, 0, 0.25);
+        margin-bottom: 8px;
+    }
+
+    .drop-list li {
+        border: none;
+        padding: 0;
+        color: white
+    }
+
+
+
+    .item {
+        display: block;
+        margin: 0 auto;
+        padding: 0;
+        width: 590px
+    }
+
+    .padit {
+        padding: .75rem 1.25rem;
+    }*/
+</style>
+
+@if (Model != null)
+{
+    if (Model.Count() != 0)
+    {
+        @foreach (var item in Model)
+        {
+            <div class="card gedf-card">
+                <div class="card-body pl-5">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a class="d-flex justify-content-between align-items-center" asp-controller="User" asp-action="Profile" asp-route-id="@item.Id" style="color:black">
+                            <div class="mr-2">
+                                <img class="rounded-circle" width="60" height="60" src="@item.Image" asp-append-version="true" />
+                            </div>
+                            <div class="ml-2">
+                                <div class="h4">
+                                    @Html.DisplayFor(modelItem => item.Nickname)
+                                </div>
+                                <div class="text-muted h7">
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card gedf-card">
+            <div class="card-header">
+                No results found.
+            </div>
+        </div>
+    }
+}
+
+
+
+@*@if (Model != null)
+    {
+        <div class="content-list" id="list">
+            <div class="drop-list table">
+                <table id="example" class="display container" style="width:100%">
+                    <tbody id="body">
+                        @foreach (var item in Model)
+                        {
+                            <tr id="UsersData" class="card-body m-4 p-2">
+                                <td class="item row col-9 d-flex">
+                                    <a asp-controller="User" asp-action="Profile" asp-route-id="@item.Id">
+                                        <span class="col-4 d-inline d-flex">
+                                            <img class="avatar" src="@item.Image" asp-append-version="true" />
+                                        </span>
+                                        <span class="col-3 d-inline d-flex">
+                                            <span class="text m-5">
+                                                <b>
+                                                    @Html.DisplayFor(modelItem => item.Nickname)
+                                                </b>
+                                                <small>
+                                                    @Html.DisplayFor(modelItem => item.Email)
+                                                </small>
+                                            </span>
+                                        </span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }*@

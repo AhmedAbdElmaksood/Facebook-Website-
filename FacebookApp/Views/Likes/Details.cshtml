@@ -1,0 +1,45 @@
+﻿@*@model FacebookApp.Models.UserLikesPost*@
+@model IEnumerable<FacebookApp.Models.UserLikesPost>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<div>
+    <div class="modal fade" id="likesModal" tabindex="-1" role="dialog" aria-labelledby="likesModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Likes
+                </div>
+                <div class="modal-body">
+                    @if (Model != null)
+                        @foreach (var like in Model)
+                        {
+                            if (like.IsLiked == true)
+                            {
+                    <dl class="row">
+                        @{
+                            var u = await UserManager.FindByIdAsync(like.UserId);
+                        }
+                        <dt class="col-sm-2">
+                            <img class="rounded-circle" width="50" height="50" src="@Url.Content(u.Image)" alt="">
+                        </dt>
+                        <dd class="col-sm-10">
+                            <a asp-controller="User" asp-action="Profile" asp-route-id="@like.UserId" style="color:black">
+                                @u.Nickname <br />
+                                @u.Email
+                            </a>
+
+                        </dd>
+                    </dl>
+                            }
+                        }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,48 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+@model FacebookApp.Models.Post
+
+<div>
+    <div class="modal fade" id="deletePostModal" tabindex="-1" role="dialog" aria-labelledby="deletePostModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                @*<form asp-controller="Posts" asp-action="Delete" method="post">*@
+                    <div class="modal-body">
+                        Are you sure you want to delete this post?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <input type="button" value="Yes" class="btn btn-primary" onclick="deletePost(@Model.Id);"/>
+                    </div>
+                @*</form>*@
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script>
+        function deletePost(Id) {
+               
+        $.ajax({
+                type: 'POST',
+                url: '/Posts/Delete',
+            data: {
+                Id:Id,
+                
+                },
+                dataType: 'json',
+                success: function (response) {
+                    refreshPost();
+                    $('#deletePostModal').modal('toggle');
+                },
+
+                error: function (response) {
+                    alert("Error");
+                }
+            });
+        }
+
+</script>

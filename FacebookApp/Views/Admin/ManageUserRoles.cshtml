@@ -1,0 +1,35 @@
+﻿@model List<FacebookApp.ViewModel.UsersRolesViewModel>
+@{
+    var userId = ViewBag.userId;
+}
+<div>
+    <div class="modal fade" id="manageUserRoleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <form asp-controller="Admin" asp-action="ManageUserRoles" method="post">
+                    <div class="card">
+                        <div class="card-header">
+                            Manage User Roles
+                        </div>
+                        <div class="card-body">
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                <div class="form-check m-1">
+                                    <input type="hidden" asp-for="@Model[i].RoleId" />
+                                    <input type="hidden" asp-for="@Model[i].RoleName" />
+                                    <input class="form-check-input" asp-for="@Model[i].IsSelected" />
+                                    <label class="form-check-label" asp-for="@Model[i].IsSelected">@Model[i].RoleName</label>
+                                </div>
+                            }
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <input type="submit" value="Update" class="btn btn-primary" style="width:auto" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

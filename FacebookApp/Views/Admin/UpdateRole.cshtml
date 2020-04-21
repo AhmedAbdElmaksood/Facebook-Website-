@@ -1,0 +1,37 @@
+﻿@model Role
+
+
+<div class="row">
+    <div class="list-group col-md-2">
+        @Html.ActionLink("Create Role", "CreateRole", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Get Roles", "GetRoles", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+
+    </div>
+    <div class="col-md-10">
+
+        <div class="card card-plain">
+            <div class="card-header card-header-info">
+                <h4 class="card-title mt-0">Update Role</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-controller="Admin" asp-action="UpdateRole" class="col-md-6">
+                    <input type="hidden" asp-for="Id" />
+
+
+                    <div class="form-group">
+                        <label asp-for="Name">Role Name</label>
+                        <input type="text" class="form-control" asp-for="Name">
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Description">Description</label>
+                        <input type="text" class="form-control" asp-for="Description">
+                    </div>
+
+                    <input type="button" onclick="location.href='@Url.Action("GetRoles", "Admin")'" value="Back" class="btn btn-secondary" />
+                    <input type="submit" value="Update" class="btn btn-primary text-right" />
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

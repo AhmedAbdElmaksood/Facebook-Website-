@@ -1,0 +1,138 @@
+﻿@model IEnumerable<FacebookApp.ViewModel.UserViewModel>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+<style>
+    td {
+        text-align: center;
+    }
+</style>
+
+<div id="modalDiv">
+
+</div>
+
+<div class="row">
+    <div class="list-group col-md-2">
+        @Html.ActionLink("Create User", "CreateUser", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+        @Html.ActionLink("Users List", "Index", "Admin", null, new { @class = "list-group-item list-group-item-action" })
+
+
+    </div>
+    <div class="col-md-10">
+
+        <div class="card card-plain">
+            <div class="card-header card-header-info">
+                <h4 class="card-title mt-0">Users List</h4>
+                <!-- <p class="card-category"> Here is a subtitle for this table</p> -->
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="example" class="table table-hover" cellspacing="0" width="100%">
+                        <thead class="">
+                            <tr>
+                                <th class="th-sm">
+                                    Image
+                                </th>
+                                <th class="th-sm">
+                                    Nickname
+                                </th>
+                                <th class="th-sm">
+                                    Email
+                                </th>
+                                <th class="th-sm">
+                                    Bio
+                                </th>
+                                <th class="th-sm">
+                                    Phone
+                                </th>
+                                <th class="th-sm">
+                                    Role
+                                </th>
+                                <th class="th-sm">
+                                </th>
+                                <th class="th-sm">
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td scope="row"><img src="@Url.Content(item.Image)" class="rounded-circle" width="35" height="35" /></td>
+                                <td scope="row"><a asp-controller="User" asp-action="Profile" asp-route-id="@item.UserId" style="color:black">@item.Nickname</a></td>
+                                <td scope="row">@item.Email</td>
+                                <td scope="row">@item.Bio</td>
+                                <td scope="row">@item.PhoneNumber</td>
+                                <td scope="row">
+                                    @*<select disabled="true" class="form-control" asp-for="@item.Role" asp-items="ViewBag.RoleNames"></select>*@
+                                    <a asp-controller="Admin" style="width:auto" asp-action="ManageUserRoles" asp-route-id="@item.UserId" data-ajax="true" data-ajax-update="#modalDiv" data-ajax-mode="replace" data-ajax-method="GET" data-ajax-success="showManageUserRoles()">Change</a>
+
+                                </td>
+                                @if (item.UserId != UserManager.GetUserId(User))
+                                {
+                                    if (item.isBlocked == true)
+                                    {
+                                        <td scope="row">
+                                            <a asp-controller="Admin" asp-action="UnblockHandle" asp-route-id="@item.UserId" class="btn btn-danger">
+                                                Unblock
+                                            </a>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td scope="row">
+                                            <a asp-controller="Admin" asp-action="blockHandle" asp-route-id="@item.UserId" class="btn btn-danger">
+                                                Block
+                                            </a>
+                                        </td>
+                                    }
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+
+                                @*<td scope="row"><input type="submit" id="blockBtn" value="Block" asp-route-id="@item.UserId" class="btn btn-danger" onclick="blockHandle(this)" /></td>*@
+                                <td>
+                                    <a asp-action="UpdateUser" asp-controller="Admin" asp-route-id="@item.UserId" class="btn btn-primary">Edit</a>
+                                </td>
+
+                            </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function blockHandle(obj) {
+            if (obj.innerText == "Block") {
+                obj.innerText = "Unblock";
+            }
+            else obj.innerText = "Block";
+        }
+
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "columnDefs": [
+                    { "searchable": false, "targets": [-1, -2, -3] }, //remove filter from last 3 columns
+                    { "sortable": false, "targets": [-1, -2, -3] } //remove sorting from last 3 columns
+                ]
+            });
+            $('.dataTables_length').addClass('bs-select');
+        });
+
+        function showManageUserRoles() { $("#manageUserRoleModal").modal('toggle'); }
+        
+
+    </script>
+}
